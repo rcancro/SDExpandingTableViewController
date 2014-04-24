@@ -7,35 +7,53 @@
 //
 
 #import "SDExpandingTableViewController.h"
+#import "JTTree.h"
 
 @implementation SDIndexPath
 
-+ (instancetype)indexPathWithTable:(NSInteger)table sections:(NSInteger)section row:(NSInteger)row
++ (instancetype)indexPathWithTable:(id<SDExpandingTableViewProtocol>)table sections:(NSInteger)section row:(NSInteger)row
 {
     SDIndexPath *path = [[SDIndexPath alloc] init];
-    path.table = table;
-    path.row = row;
-    path.section = section;
+    path.tableIdentifier = table;
+    path.indexPath = [NSIndexPath indexPathForRow:row inSection:section];
     return path;
 }
 
-+ (instancetype)indexPathWithTable:(NSInteger)table indexPath:(NSIndexPath *)indexPath
++ (instancetype)indexPathWithTable:(id<SDExpandingTableViewProtocol>)table indexPath:(NSIndexPath *)indexPath
 {
     SDIndexPath *path = [[SDIndexPath alloc] init];
-    path.table = table;
-    path.row = indexPath.row;
-    path.section = indexPath.section;
+    path.tableIdentifier = table;
+    path.indexPath = indexPath;
     return path;
 }
 
 @end
 
 @interface SDExpandingTableViewController ()<UITableViewDataSource, UITableViewDelegate>
+@property (nonatomic, strong) NSDictionary *identifierToTableView;
+@property (nonatomic, strong) NSDictionary *tableViewToIdentifier;
 @property (nonatomic, strong) NSArray *tableViews;
+
 @property (nonatomic, strong) NSArray *tableData;
+@property (nonatomic, strong) JTTree *taxonomyTree;
+@property (nonatomic, assign) UITableViewStyle tableStyle;
+
+@property (nonatomic, assign) NSUInteger tableIndexCounter;
 @end
 
 @implementation SDExpandingTableViewController
+
+- (instancetype)initWithTableViewIdentifier:(id<SDExpandingTableViewProtocol>)identifier tableViewStyle:(UITableViewStyle)tableStyle
+{
+    self = [super init];
+    if (self)
+    {
+        _taxonomyTree = [[JTTree alloc] initWithObject:identifier];
+        _tableStyle = tableStyle;
+    }
+    return self;
+}
+
 
 - (id)initWithInitialTableData:(NSArray *)tableData
 {
@@ -53,38 +71,68 @@
     
     if (0 == [self.tableViews count])
     {
-        UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-        self.tableViews = [NSArray arrayWithObject:tableView];
+        id<SDExpandingTableViewProtocol> rootNode = [self.taxonomyTree rootObject];
+        UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectZero style:self.tableStyle];
+        tableView.dataSource = self;
+        tableView.translatesAutoresizingMaskIntoConstraints = NO;
         
+        self.tableViews = @[tableView];
+        tableView.tag = self.tableIndexCounter;
+        
+        self.identifierToTableView = @{[rootNode identifier]:tableView};
+        self.tableViewToIdentifier = @{@(tableView.tag):rootNode};
+        
+        [self.view addSubview:tableView];
+        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tableView]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(tableView)]];
+        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[tableView]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(tableView)]];
+        
+//        NSArray *children = [self.dataSource childrenIdentifiersForIdentifier:rootNode];
+//        
+//        NSUInteger index = 0;
+//        for (id<SDExpandingTableViewProtocol> child in children)
+//        {
+//            [self.taxonomyTree insertChild:child atIndex:index];
+//            index++;
+//        }
+        [tableView reloadData];
     }
 }
 
-- (NSUInteger)indexForTableView:(UITableView *)tableView
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [self.tableViews indexOfObject:tableView];
+    id<SDExpandingTableViewProtocol> identifier = self.tableViewToIdentifier[@(tableView.tag)];
+    SDIndexPath *sdPath = [SDIndexPath indexPathWithTable:identifier indexPath:indexPath];
+    [self.dataSource didSelectRowAtIndexPath:sdPath];
 }
+
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 {
-    NSInteger sectionCount = 0;
-    NSInteger tableIndex = [self indexForTableView:tableView];
-    if (NSNotFound != tableIndex)
+    NSInteger rowCount = 0;
+    id<SDExpandingTableViewProtocol> identifier = self.tableViewToIdentifier[@(tableView.tag)];
+    if (nil != identifier)
     {
-        sectionCount = [self.dataSource tableView:tableView numberOfRowsInTableView:tableIndex section:section];
+        rowCount = [self.dataSource numberOfRowsInTableView:identifier section:section];
     }
-    return sectionCount;
+    return rowCount;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *tableCell = nil;
-    NSInteger tableIndex = [self indexForTableView:tableView];
-    if (NSNotFound != tableIndex)
+    id<SDExpandingTableViewProtocol> identifier = self.tableViewToIdentifier[@(tableView.tag)];
+    if (nil != identifier)
     {
-        SDIndexPath *sdPath = [SDIndexPath indexPathWithTable:tableIndex indexPath:indexPath];
-        tableCell = [self.dataSource tableView:tableView cellForRowAtIndexPath:sdPath];
+        SDIndexPath *sdPath = [SDIndexPath indexPathWithTable:identifier indexPath:indexPath];
+        tableCell = [self.dataSource cellForRowAtIndexPath:sdPath];
     }
     return tableCell;
 }
+
+- (void)navigateToTableViewWithIdentifier:(id<SDExpandingTableViewProtocol>)tableViewIdentifier
+{
+    
+}
+
 
 @end

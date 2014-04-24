@@ -8,25 +8,33 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SDIndexPath : NSObject
-@property (nonatomic, assign) NSInteger table;
-@property (nonatomic, assign) NSInteger section;
-@property (nonatomic, assign) NSInteger row;
 
-+ (instancetype)indexPathWithTable:(NSInteger)table sections:(NSInteger)section row:(NSInteger)row;
-+ (instancetype)indexPathWithTable:(NSInteger)table indexPath:(NSIndexPath *)indexPath;
+@protocol SDExpandingTableViewProtocol <NSObject>
+- (NSString *)identifier;
+@end
+
+@interface SDIndexPath : NSObject
+@property (nonatomic, weak) id<SDExpandingTableViewProtocol> tableIdentifier;
+@property (nonatomic, strong) NSIndexPath *indexPath;
+
++ (instancetype)indexPathWithTable:(id<SDExpandingTableViewProtocol>)table sections:(NSInteger)section row:(NSInteger)row;
++ (instancetype)indexPathWithTable:(id<SDExpandingTableViewProtocol>)table indexPath:(NSIndexPath *)indexPath;
 @end
 
 @protocol SDExpandingTableViewControllerDataSource<NSObject>
+- (UITableViewCell *)cellForRowAtIndexPath:(SDIndexPath *)indexPath;
+- (NSInteger)numberOfRowsInTableView:(id<SDExpandingTableViewProtocol>)table section:(NSInteger)section;
 
+- (NSArray *)childrenIdentifiersForIdentifier:(id<SDExpandingTableViewProtocol>)identifier;
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(SDIndexPath *)indexPath;
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInTableView:(NSInteger)table section:(NSInteger)section;
+- (void)didSelectRowAtIndexPath:(SDIndexPath *)indexPath;
+
 @end
 
 @interface SDExpandingTableViewController : UIViewController
 @property (nonatomic, weak) id<SDExpandingTableViewControllerDataSource> dataSource;
 
-- (void)addNewTableViewWithIdentifier:(NSString *)tableViewIdentifier;
-- (void)popTableView;
+- (instancetype)initWithTableViewIdentifier:(id<SDExpandingTableViewProtocol>)identifier tableViewStyle:(UITableViewStyle)tableStyle;
+
+- (void)navigateToTableViewWithIdentifier:(id<SDExpandingTableViewProtocol>)tableViewIdentifier;
 @end
