@@ -9,25 +9,25 @@
 #import <UIKit/UIKit.h>
 
 
-@protocol SDExpandingTableViewDataDelegate <NSObject>
+@protocol SDExpandingTableViewColumnDelegate <NSObject>
 - (NSString *)identifier;
 @end
 
 @interface SDIndexPath : NSObject
-@property (nonatomic, weak) id<SDExpandingTableViewDataDelegate> tableIdentifier;
+@property (nonatomic, weak) id<SDExpandingTableViewColumnDelegate> column;
 @property (nonatomic, assign) NSInteger row;
 @property (nonatomic, assign) NSInteger section;
 
-+ (instancetype)indexPathWithTable:(id<SDExpandingTableViewDataDelegate>)table sections:(NSInteger)section row:(NSInteger)row;
-+ (instancetype)indexPathWithTable:(id<SDExpandingTableViewDataDelegate>)table indexPath:(NSIndexPath *)indexPath;
++ (instancetype)indexPathWithColumn:(id<SDExpandingTableViewColumnDelegate>)column sections:(NSInteger)section row:(NSInteger)row;
++ (instancetype)indexPathWithColumn:(id<SDExpandingTableViewColumnDelegate>)column indexPath:(NSIndexPath *)indexPath;
 @end
 
 @protocol SDExpandingTableViewControllerDelegate<NSObject>
 
 // data source methods
 - (UITableViewCell *)cellForRowAtIndexPath:(SDIndexPath *)indexPath;
-- (NSInteger)numberOfRowsInTableView:(id<SDExpandingTableViewDataDelegate>)table section:(NSInteger)section;
-- (NSInteger)numberOfSectionsInTableView:(id<SDExpandingTableViewDataDelegate>)table;
+- (NSInteger)numberOfRowsInColumn:(id<SDExpandingTableViewColumnDelegate>)column section:(NSInteger)section;
+- (NSInteger)numberOfSectionsInColumn:(id<SDExpandingTableViewColumnDelegate>)column;
 
 // delegate methods
 - (void)didSelectRowAtIndexPath:(SDIndexPath *)indexPath;
@@ -39,6 +39,6 @@
 @property (nonatomic, assign) CGFloat tableViewWidth;
 @property (nonatomic, assign) UIEdgeInsets tableViewsPaddingInsets;
 
-- (instancetype)initWithTableViewIdentifier:(id<SDExpandingTableViewDataDelegate>)identifier tableViewStyle:(UITableViewStyle)tableStyle;
-- (void)navigateToTableViewWithIdentifier:(id<SDExpandingTableViewDataDelegate>)tableViewIdentifier fromParent:(id<SDExpandingTableViewDataDelegate>)parentIdentifier animated:(BOOL)animated;
+- (instancetype)initWithColumn:(id<SDExpandingTableViewColumnDelegate>)column tableViewStyle:(UITableViewStyle)tableStyle;
+- (void)navigateToColumn:(id<SDExpandingTableViewColumnDelegate>)column fromParentColumn:(id<SDExpandingTableViewColumnDelegate>)parent animated:(BOOL)animated;
 @end
