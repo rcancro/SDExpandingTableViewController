@@ -9,32 +9,36 @@
 #import <UIKit/UIKit.h>
 
 
-@protocol SDExpandingTableViewProtocol <NSObject>
+@protocol SDExpandingTableViewDataDelegate <NSObject>
 - (NSString *)identifier;
 @end
 
 @interface SDIndexPath : NSObject
-@property (nonatomic, weak) id<SDExpandingTableViewProtocol> tableIdentifier;
-@property (nonatomic, strong) NSIndexPath *indexPath;
+@property (nonatomic, weak) id<SDExpandingTableViewDataDelegate> tableIdentifier;
+@property (nonatomic, assign) NSInteger row;
+@property (nonatomic, assign) NSInteger section;
 
-+ (instancetype)indexPathWithTable:(id<SDExpandingTableViewProtocol>)table sections:(NSInteger)section row:(NSInteger)row;
-+ (instancetype)indexPathWithTable:(id<SDExpandingTableViewProtocol>)table indexPath:(NSIndexPath *)indexPath;
++ (instancetype)indexPathWithTable:(id<SDExpandingTableViewDataDelegate>)table sections:(NSInteger)section row:(NSInteger)row;
++ (instancetype)indexPathWithTable:(id<SDExpandingTableViewDataDelegate>)table indexPath:(NSIndexPath *)indexPath;
 @end
 
-@protocol SDExpandingTableViewControllerDataSource<NSObject>
+@protocol SDExpandingTableViewControllerDelegate<NSObject>
+
+// data source methods
 - (UITableViewCell *)cellForRowAtIndexPath:(SDIndexPath *)indexPath;
-- (NSInteger)numberOfRowsInTableView:(id<SDExpandingTableViewProtocol>)table section:(NSInteger)section;
+- (NSInteger)numberOfRowsInTableView:(id<SDExpandingTableViewDataDelegate>)table section:(NSInteger)section;
+- (NSInteger)numberOfSectionsInTableView:(id<SDExpandingTableViewDataDelegate>)table;
 
-- (NSArray *)childrenIdentifiersForIdentifier:(id<SDExpandingTableViewProtocol>)identifier;
-
+// delegate methods
 - (void)didSelectRowAtIndexPath:(SDIndexPath *)indexPath;
 
 @end
 
 @interface SDExpandingTableViewController : UIViewController
-@property (nonatomic, weak) id<SDExpandingTableViewControllerDataSource> dataSource;
+@property (nonatomic, weak) id<SDExpandingTableViewControllerDelegate> dataSource;
+@property (nonatomic, assign) CGFloat tableViewWidth;
+@property (nonatomic, assign) UIEdgeInsets tableViewsPaddingInsets;
 
-- (instancetype)initWithTableViewIdentifier:(id<SDExpandingTableViewProtocol>)identifier tableViewStyle:(UITableViewStyle)tableStyle;
-
-- (void)navigateToTableViewWithIdentifier:(id<SDExpandingTableViewProtocol>)tableViewIdentifier;
+- (instancetype)initWithTableViewIdentifier:(id<SDExpandingTableViewDataDelegate>)identifier tableViewStyle:(UITableViewStyle)tableStyle;
+- (void)navigateToTableViewWithIdentifier:(id<SDExpandingTableViewDataDelegate>)tableViewIdentifier fromParent:(id<SDExpandingTableViewDataDelegate>)parentIdentifier animated:(BOOL)animated;
 @end

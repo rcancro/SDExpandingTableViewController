@@ -12,7 +12,7 @@
 static NSString const *kIdKey = @"identifier";
 static NSString const *kDataKey = @"data";
 
-@interface NSString(hello)<SDExpandingTableViewProtocol>
+@interface NSString(hello)<SDExpandingTableViewDataDelegate>
 - (NSString *)identifier;
 @end
 
@@ -25,7 +25,7 @@ static NSString const *kDataKey = @"data";
 
 @end
 
-@interface SDViewController ()<SDExpandingTableViewControllerDataSource>
+@interface SDViewController ()<SDExpandingTableViewControllerDelegate>
 @property (nonatomic, strong) NSArray *data;
 @property (nonatomic, strong) NSDictionary *level0;
 
@@ -120,7 +120,7 @@ static NSString const *kDataKey = @"data";
                              @"Laundry":@[@"Pets", @"Car care"]};
     
     self.level2 = @{@"Fresh Fruit":@[@"Fruit", @"Vegtables", @"Potates"],
-                             @"FreshMeat":@[@"Roast Dinners", @"Sausage", @"Beef"],
+                             @"Fresh Meat":@[@"Roast Dinners", @"Sausage", @"Beef"],
                              @"Hard Drinks":@[@"Vodka", @"Rum", @"Whiskey"],
                              @"Soft Drinks":@[@"Coke", @"Cheery Coke", @"hello"],
                              @"Pets":@[@"Cats", @"Dogs"],
@@ -139,12 +139,16 @@ static NSString const *kDataKey = @"data";
 {
     self.expandingVC = [[SDExpandingTableViewController alloc] initWithTableViewIdentifier:@"root" tableViewStyle:UITableViewStylePlain];
     self.expandingVC.dataSource = self;
-    self.popover = [[UIPopoverController alloc] initWithContentViewController:self.expandingVC];
-    [self.popover presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    
+    self.expandingVC.view.frame = CGRectMake(10, 80, 215, 400);
+    [self.view addSubview:self.expandingVC.view];
+    
+//    self.popover = [[UIPopoverController alloc] initWithContentViewController:self.expandingVC];
+//    [self.popover presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     
 }
 
-- (NSArray *)dataForID:(id<SDExpandingTableViewProtocol>)identifier
+- (NSArray *)dataForID:(id<SDExpandingTableViewDataDelegate>)identifier
 {
     NSArray *data = [self.level1 objectForKey:identifier.identifier];
     if (!data)
@@ -165,18 +169,18 @@ static NSString const *kDataKey = @"data";
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     
     NSArray *data = [self dataForID:indexPath.tableIdentifier];
-    NSString *item = [data objectAtIndex:indexPath.indexPath.row];
+    NSString *item = [data objectAtIndex:indexPath.row];
     cell.textLabel.text = item;
     return cell;
 }
 
-- (NSInteger)numberOfRowsInTableView:(id<SDExpandingTableViewProtocol>)table section:(NSInteger)section
+- (NSInteger)numberOfRowsInTableView:(id<SDExpandingTableViewDataDelegate>)table section:(NSInteger)section
 {
     NSArray *data = [self dataForID:table];
     return [data count];
 }
 
-- (NSArray *)childrenIdentifiersForIdentifier:(id<SDExpandingTableViewProtocol>)identifier
+- (NSArray *)childrenIdentifiersForIdentifier:(id<SDExpandingTableViewDataDelegate>)identifier
 {
     NSArray *data = [self dataForID:identifier];
     return data;
@@ -184,8 +188,12 @@ static NSString const *kDataKey = @"data";
 
 - (void)didSelectRowAtIndexPath:(SDIndexPath *)indexPath
 {
-//    NSArray *data = [self dataForID:indexPath.tableIdentifier];
-    [self.expandingVC navigateToTableViewWithIdentifier:indexPath.tableIdentifier];
+    NSArray *data = [self dataForID:indexPath.tableIdentifier];
+    if ([data count] > indexPath.row)
+    {
+        NSString *tableId = data[indexPath.row];
+        [self.expandingVC navigateToTableViewWithIdentifier:tableId fromParent:indexPath.tableIdentifier animated:YES];
+    }
 }
 
 
