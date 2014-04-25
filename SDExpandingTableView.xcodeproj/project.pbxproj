@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9C2C07EC1909739000E4BCD5 /* JTTree.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C07EB1909739000E4BCD5 /* JTTree.m */; };
 		9CD4E66A1908573B00CDD6A3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD4E6691908573B00CDD6A3 /* Foundation.framework */; };
 		9CD4E66C1908573B00CDD6A3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD4E66B1908573B00CDD6A3 /* CoreGraphics.framework */; };
 		9CD4E66E1908573B00CDD6A3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD4E66D1908573B00CDD6A3 /* UIKit.framework */; };
@@ -36,8 +35,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9C2C07EA1909739000E4BCD5 /* JTTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JTTree.h; path = Externals/JTTree/JTTree.h; sourceTree = "<group>"; };
-		9C2C07EB1909739000E4BCD5 /* JTTree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JTTree.m; path = Externals/JTTree/JTTree.m; sourceTree = "<group>"; };
 		9CD4E6661908573B00CDD6A3 /* SDExpandingTableView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SDExpandingTableView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CD4E6691908573B00CDD6A3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		9CD4E66B1908573B00CDD6A3 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -85,15 +82,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		9C2C07E91909738200E4BCD5 /* Externals */ = {
-			isa = PBXGroup;
-			children = (
-				9C2C07EA1909739000E4BCD5 /* JTTree.h */,
-				9C2C07EB1909739000E4BCD5 /* JTTree.m */,
-			);
-			name = Externals;
-			sourceTree = "<group>";
-		};
 		9CD4E65D1908573B00CDD6A3 = {
 			isa = PBXGroup;
 			children = (
@@ -127,7 +115,6 @@
 		9CD4E66F1908573B00CDD6A3 /* SDExpandingTableView */ = {
 			isa = PBXGroup;
 			children = (
-				9C2C07E91909738200E4BCD5 /* Externals */,
 				9CD4E6781908573B00CDD6A3 /* SDAppDelegate.h */,
 				9CD4E6791908573B00CDD6A3 /* SDAppDelegate.m */,
 				9CD4E67B1908573B00CDD6A3 /* Main.storyboard */,
@@ -268,7 +255,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C2C07EC1909739000E4BCD5 /* JTTree.m in Sources */,
 				9CD4E6761908573B00CDD6A3 /* main.m in Sources */,
 				9CD4E6801908573B00CDD6A3 /* SDViewController.m in Sources */,
 				9CD4E6A01908593100CDD6A3 /* SDExpandingTableViewController.m in Sources */,

@@ -13,24 +13,15 @@
 - (NSString *)identifier;
 @end
 
-@interface SDIndexPath : NSObject
-@property (nonatomic, weak) id<SDExpandingTableViewColumnDelegate> column;
-@property (nonatomic, assign) NSInteger row;
-@property (nonatomic, assign) NSInteger section;
-
-+ (instancetype)indexPathWithColumn:(id<SDExpandingTableViewColumnDelegate>)column sections:(NSInteger)section row:(NSInteger)row;
-+ (instancetype)indexPathWithColumn:(id<SDExpandingTableViewColumnDelegate>)column indexPath:(NSIndexPath *)indexPath;
-@end
-
 @protocol SDExpandingTableViewControllerDelegate<NSObject>
 
 // data source methods
-- (UITableViewCell *)cellForRowAtIndexPath:(SDIndexPath *)indexPath;
+- (UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column;
 - (NSInteger)numberOfRowsInColumn:(id<SDExpandingTableViewColumnDelegate>)column section:(NSInteger)section;
 - (NSInteger)numberOfSectionsInColumn:(id<SDExpandingTableViewColumnDelegate>)column;
 
 // delegate methods
-- (void)didSelectRowAtIndexPath:(SDIndexPath *)indexPath;
+- (void)didSelectRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column;;
 
 @end
 

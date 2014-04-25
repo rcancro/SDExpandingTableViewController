@@ -8,31 +8,6 @@
 
 #import "SDExpandingTableViewController.h"
 
-@interface SDIndexPath()
-@end
-
-@implementation SDIndexPath
-
-+ (instancetype)indexPathWithColumn:(id<SDExpandingTableViewColumnDelegate>)column sections:(NSInteger)section row:(NSInteger)row
-{
-    SDIndexPath *path = [[SDIndexPath alloc] init];
-    path.column = column;
-    path.row = row;
-    path.section = section;
-    return path;
-}
-
-+ (instancetype)indexPathWithColumn:(id<SDExpandingTableViewColumnDelegate>)column indexPath:(NSIndexPath *)indexPath
-{
-    SDIndexPath *path = [[SDIndexPath alloc] init];
-    path.column = column;
-    path.row = indexPath.row;
-    path.section = indexPath.section;
-    return path;
-}
-
-@end
-
 static const CGFloat kDefaultTableViewWidth = 205.f;
 static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
 
@@ -88,9 +63,9 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     [self.view setNeedsUpdateConstraints];
 }
 
-- (void)popBackToTableView:(id<SDExpandingTableViewColumnDelegate>)tableIdentifier
+- (void)popBackToColumn:(id<SDExpandingTableViewColumnDelegate>)column
 {
-    UITableView *tableView = self.identifierToTableView[tableIdentifier.identifier];
+    UITableView *tableView = self.identifierToTableView[column.identifier];
     if (tableView)
     {
         NSUInteger index = [self.tableViews indexOfObject:tableView];
@@ -105,9 +80,9 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
 
 - (void)removeTableView:(UITableView *)tableView
 {
-    id<SDExpandingTableViewColumnDelegate> tableIdentifier = self.tableViewToIdentifier[@(tableView.tag)];
+    id<SDExpandingTableViewColumnDelegate> column = self.tableViewToIdentifier[@(tableView.tag)];
     [self.tableViewToIdentifier removeObjectForKey:@(tableView.tag)];
-    [self.identifierToTableView removeObjectForKey:tableIdentifier.identifier];
+    [self.identifierToTableView removeObjectForKey:column.identifier];
     [self.tableViews removeObject:tableView];
     [tableView removeFromSuperview];
     
@@ -158,9 +133,8 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    id<SDExpandingTableViewColumnDelegate> identifier = self.tableViewToIdentifier[@(tableView.tag)];
-    SDIndexPath *sdPath = [SDIndexPath indexPathWithColumn:identifier indexPath:indexPath];
-    [self.dataSource didSelectRowAtIndexPath:sdPath];
+    id<SDExpandingTableViewColumnDelegate> column = self.tableViewToIdentifier[@(tableView.tag)];
+    [self.dataSource didSelectRowAtIndexPath:indexPath inColumn:column];
 }
 
 
@@ -181,8 +155,7 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     id<SDExpandingTableViewColumnDelegate> column = self.tableViewToIdentifier[@(tableView.tag)];
     if (nil != column)
     {
-        SDIndexPath *sdPath = [SDIndexPath indexPathWithColumn:column indexPath:indexPath];
-        tableCell = [self.dataSource cellForRowAtIndexPath:sdPath];
+        tableCell = [self.dataSource cellForRowAtIndexPath:indexPath inColumn:column];
     }
     return tableCell;
 }
@@ -191,13 +164,13 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
 {
     UITableView *tableView = [self.tableViews lastObject];
     id<SDExpandingTableViewColumnDelegate> lastColumn = self.tableViewToIdentifier[@(tableView.tag)];
-    if ([[parentColumn identifier] isEqualToString:[lastColumn identifier]])
+    if ([parentColumn identifier] == [lastColumn identifier])
     {
         [self appendTableView:column];
     }
     else
     {
-        [self popBackToTableView:parentColumn];
+        [self popBackToColumn:parentColumn];
         [self appendTableView:column];
     }
 }

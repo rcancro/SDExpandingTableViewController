@@ -43,76 +43,7 @@ static NSString const *kDataKey = @"data";
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
-    
-    self.data = @[
-                  @{kIdKey:@"Food",
-                    kDataKey: @[
-                                @{kIdKey:@"Fresh Fruit",
-                                  kDataKey:@[
-                                          @{kIdKey:@"Fruit",
-                                            kDataKey:@[]},
-                                          @{kIdKey:@"Vegtable",
-                                            kDataKey:@[]},
-                                          @{kIdKey:@"Potatoes",
-                                            kDataKey:@[]}
-                                          ]},
-                                @{kIdKey:@"Fresh Meat",
-                                  kDataKey:@[
-                                          @{kIdKey:@"Roast Dinners",
-                                            kDataKey:@[]},
-                                          @{kIdKey:@"Sausage",
-                                            kDataKey:@[]},
-                                          @{kIdKey:@"Beef",
-                                            kDataKey:@[]}
-                                          ]},
-                                @{kIdKey:@"Dairy & Eggs",
-                                  kDataKey:@[]},
-                                @{kIdKey:@"Chilled",
-                                  kDataKey:@[]}
-                                ]
-                    },
-                  
-                  @{kIdKey:@"Drinks",
-                    kDataKey: @[
-                            @{kIdKey:@"Hot Drinks",
-                              kDataKey:@[]},
-                            @{kIdKey:@"Soft Drinks",
-                              kDataKey:@[]},
-                            @{kIdKey:@"Hard Drinks",
-                              kDataKey:@[
-                                      @{kIdKey:@"Vodka",
-                                        kDataKey:@[]},
-                                      @{kIdKey:@"Rum",
-                                        kDataKey:@[]},
-                                      @{kIdKey:@"Whiskey",
-                                        kDataKey:@[]}
-                                      ]},
-                            @{kIdKey:@"Medium Drinks",
-                              kDataKey:@[
-                                      @{kIdKey:@"Coke",
-                                        kDataKey:@[]},
-                                      @{kIdKey:@"Cherry Coke",
-                                        kDataKey:@[]},
-                                      @{kIdKey:@"hello",
-                                        kDataKey:@[]}
-                                      ]}
-                            ]
-                    },
-                  
-                  @{kIdKey:@"Laundry",
-                    kDataKey: @[
-                            @{kIdKey:@"Laundry & household",
-                              kDataKey:@[]},
-                            @{kIdKey:@"Pets",
-                              kDataKey:@[]},
-                            @{kIdKey:@"Batteries",
-                              kDataKey:@[]},
-                            @{kIdKey:@"Car Care",
-                              kDataKey:@[]}
-                            ]
-                    }
-                  ];
-    
+
     self.level0 = @{@"root":@[@"Food",@"Drinks",@"Laundry"]};
     
     self.level1 = @{@"Food":@[@"Fresh Fruit", @"Fresh Meat", @"Dairy & Eggs", @"Chilled"],
@@ -148,27 +79,27 @@ static NSString const *kDataKey = @"data";
     
 }
 
-- (NSArray *)dataForID:(id<SDExpandingTableViewColumnDelegate>)identifier
+- (NSArray *)dataForID:(id<SDExpandingTableViewColumnDelegate>)column
 {
-    NSArray *data = [self.level1 objectForKey:identifier.identifier];
+    NSArray *data = [self.level1 objectForKey:column.identifier];
     if (!data)
     {
-        data = [self.level2 objectForKey:identifier.identifier];
+        data = [self.level2 objectForKey:column.identifier];
     }
     
     if (!data)
     {
-        data = [self.level0 objectForKey:identifier.identifier];
+        data = [self.level0 objectForKey:column.identifier];
     }
     return data;
 }
 
 
-- (UITableViewCell *)cellForRowAtIndexPath:(SDIndexPath *)indexPath
+- (UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column
 {
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     
-    NSArray *data = [self dataForID:indexPath.column];
+    NSArray *data = [self dataForID:column];
     NSString *item = [data objectAtIndex:indexPath.row];
     cell.textLabel.text = item;
     return cell;
@@ -191,13 +122,13 @@ static NSString const *kDataKey = @"data";
     return 1;
 }
 
-- (void)didSelectRowAtIndexPath:(SDIndexPath *)indexPath
+- (void)didSelectRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column
 {
-    NSArray *data = [self dataForID:indexPath.column];
+    NSArray *data = [self dataForID:column];
     if ([data count] > indexPath.row)
     {
         NSString *tableId = data[indexPath.row];
-        [self.expandingVC navigateToColumn:tableId fromParentColumn:indexPath.column animated:YES];
+        [self.expandingVC navigateToColumn:tableId fromParentColumn:column animated:YES];
     }
 }
 
