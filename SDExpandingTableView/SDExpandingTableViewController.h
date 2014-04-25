@@ -13,23 +13,29 @@
 - (NSString *)identifier;
 @end
 
-@protocol SDExpandingTableViewControllerDelegate<NSObject>
+@protocol SDExpandingTableViewControllerDataSource<NSObject>
 
 // data source methods
 - (UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column;
 - (NSInteger)numberOfRowsInColumn:(id<SDExpandingTableViewColumnDelegate>)column section:(NSInteger)section;
 - (NSInteger)numberOfSectionsInColumn:(id<SDExpandingTableViewColumnDelegate>)column;
+@end
 
+@protocol SDExpandingTableViewControllerDelegate<NSObject>
 // delegate methods
 - (void)didSelectRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column;;
-
+- (void)didDismissExpandingTables;
 @end
 
 @interface SDExpandingTableViewController : UIViewController
-@property (nonatomic, weak) id<SDExpandingTableViewControllerDelegate> dataSource;
-@property (nonatomic, assign) CGFloat tableViewWidth;
+@property (nonatomic, weak) id<SDExpandingTableViewControllerDataSource> dataSource;
+@property (nonatomic, weak) id<SDExpandingTableViewControllerDelegate> delegate;
+
+@property (nonatomic, strong, readonly) UIView *tableContainerView;
+
+@property (nonatomic, assign) CGSize tableViewSize;
 @property (nonatomic, assign) UIEdgeInsets tableViewsPaddingInsets;
 
-- (instancetype)initWithColumn:(id<SDExpandingTableViewColumnDelegate>)column tableViewStyle:(UITableViewStyle)tableStyle;
+- (instancetype)initWithColumn:(id<SDExpandingTableViewColumnDelegate>)column tableViewStyle:(UITableViewStyle)tableStyle displayAtPoint:(CGPoint)origin;
 - (void)navigateToColumn:(id<SDExpandingTableViewColumnDelegate>)column fromParentColumn:(id<SDExpandingTableViewColumnDelegate>)parent animated:(BOOL)animated;
 @end

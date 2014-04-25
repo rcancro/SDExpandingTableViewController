@@ -25,7 +25,7 @@ static NSString const *kDataKey = @"data";
 
 @end
 
-@interface SDViewController ()<SDExpandingTableViewControllerDelegate>
+@interface SDViewController ()<SDExpandingTableViewControllerDelegate, SDExpandingTableViewControllerDataSource>
 @property (nonatomic, strong) NSArray *data;
 @property (nonatomic, strong) NSDictionary *level0;
 
@@ -68,11 +68,13 @@ static NSString const *kDataKey = @"data";
 
 - (IBAction)tapMeAction:(id)sender
 {
-    self.expandingVC = [[SDExpandingTableViewController alloc] initWithColumn:@"root" tableViewStyle:UITableViewStylePlain];
+    self.expandingVC = [[SDExpandingTableViewController alloc] initWithColumn:@"root" tableViewStyle:UITableViewStylePlain displayAtPoint:CGPointMake(20, 60)];
     self.expandingVC.dataSource = self;
+    self.expandingVC.delegate = self;
     
-    self.expandingVC.view.frame = CGRectMake(10, 80, 215, 400);
-    [self.view addSubview:self.expandingVC.view];
+    [self.navigationController addChildViewController:self.expandingVC];
+    self.expandingVC.view.frame = self.navigationController.view.bounds;
+    [self.navigationController.view addSubview:self.expandingVC.view];
     
 //    self.popover = [[UIPopoverController alloc] initWithContentViewController:self.expandingVC];
 //    [self.popover presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
@@ -132,5 +134,10 @@ static NSString const *kDataKey = @"data";
     }
 }
 
+- (void)didDismissExpandingTables
+{
+    [self.expandingVC removeFromParentViewController];
+    [self.expandingVC.view removeFromSuperview];
+}
 
 @end
