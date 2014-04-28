@@ -11,7 +11,7 @@
 static const CGSize kDefaultTableViewSize = {205.f, 350.f};
 static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
 
-@interface SDExpandingTableViewController ()<UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate>
+@interface SDExpandingTableViewController ()<UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, strong) NSMutableDictionary *identifierToTableView;
 @property (nonatomic, strong) NSMutableDictionary *tableViewToIdentifier;
 @property (nonatomic, strong) NSMutableArray *tableViews;
@@ -21,12 +21,12 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
 @property (nonatomic, assign) NSUInteger tableIndexCounter;
 @property (nonatomic, assign) BOOL needsUpdateConstraints;
 
-@property (nonatomic, strong, readwrite) UIView *tableContainerView;
+@property (nonatomic, strong) UIPopoverController *popController;
 @end
 
 @implementation SDExpandingTableViewController
 
-- (instancetype)initWithColumn:(id<SDExpandingTableViewColumnDelegate>)column tableViewStyle:(UITableViewStyle)tableStyle displayAtPoint:(CGPoint)origin
+- (instancetype)initWithColumn:(id<SDExpandingTableViewColumnDelegate>)column tableViewStyle:(UITableViewStyle)tableStyle
 {
     self = [super init];
     if (self)
@@ -38,13 +38,21 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
         _tableViewSize = kDefaultTableViewSize;
         _tableViewsPaddingInsets = kDefaultTableViewPaddingInsets;
         
-        _tableContainerView = [[UIView alloc] initWithFrame:CGRectMake(origin.x, origin.y, 0.f, 0.f)];
-        [self.view addSubview:_tableContainerView];
-        _tableContainerView.backgroundColor = [UIColor purpleColor];
-        
         [self appendTableView:column];
     }
     return self;
+}
+
+- (void)presentFromRect:(CGRect)rect inView:(UIView *)view permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections animated:(BOOL)animated
+{
+    self.popController = [[UIPopoverController alloc] initWithContentViewController:self];
+    [self.popController presentPopoverFromRect:rect inView:view permittedArrowDirections:arrowDirections animated:animated];
+}
+
+- (void)presentFromBarButtonItem:(UIBarButtonItem *)item permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections animated:(BOOL)animated
+{
+    self.popController = [[UIPopoverController alloc] initWithContentViewController:self];
+    [self.popController presentPopoverFromBarButtonItem:item permittedArrowDirections:arrowDirections animated:animated];
 }
 
 - (void)appendTableView:(id<SDExpandingTableViewColumnDelegate>)column
@@ -62,7 +70,7 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     self.identifierToTableView[column.identifier] = tableView;
     self.tableViewToIdentifier[@(tableView.tag)] = column;
     
-    [self.tableContainerView addSubview:tableView];
+    [self.view addSubview:tableView];
     [tableView reloadData];
     
     self.needsUpdateConstraints = YES;
@@ -99,13 +107,12 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     if (self.needsUpdateConstraints)
     {
         self.needsUpdateConstraints = NO;
+        [self.view removeConstraints:[self.view constraints]];
         
-        [self.tableContainerView removeConstraints:[self.tableContainerView constraints]];
-        
-        CGRect containerFrame = self.tableContainerView.frame;
+        CGRect containerFrame = self.view.frame;
         containerFrame.size.width = self.tableViewsPaddingInsets.left + self.tableViewsPaddingInsets.right + (self.tableViewSize.width * [self.tableViews count]);
         containerFrame.size.height = self.tableViewsPaddingInsets.top + self.tableViewsPaddingInsets.bottom + self.tableViewSize.height;
-        self.tableContainerView.frame = containerFrame;
+        self.view.frame = containerFrame;
         
         NSUInteger index = 0;
         NSMutableDictionary *views = [NSMutableDictionary dictionaryWithCapacity:[self.tableViews count]];
@@ -121,36 +128,25 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
             [horizontalConstraints appendFormat:@"[%@(%f)]", tableId, self.tableViewSize.width];
             
             views[tableId] = tableView;
-            [self.tableContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-(%f)-[tableView(%f)]-(%f)-|", self.tableViewsPaddingInsets.top, self.tableViewSize.height, self.tableViewsPaddingInsets.left] options:0 metrics:nil views:NSDictionaryOfVariableBindings(tableView)]];
+            [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-(%f)-[tableView(%f)]-(%f)-|", self.tableViewsPaddingInsets.top, self.tableViewSize.height, self.tableViewsPaddingInsets.left] options:0 metrics:nil views:NSDictionaryOfVariableBindings(tableView)]];
             
             index++;
         }
         [horizontalConstraints appendFormat:@"-(%f)-|", self.tableViewsPaddingInsets.right];
-        [self.tableContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:horizontalConstraints options:0 metrics:nil views:views]];
+        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:horizontalConstraints options:0 metrics:nil views:views]];
         
+        [self.popController setPopoverContentSize:self.view.frame.size animated:YES];
     }
     [super updateViewConstraints];
 }
 
-- (void)viewDidLoad
+- (CGSize)preferredContentSize
 {
-    [super viewDidLoad];
-    self.view.backgroundColor = [UIColor clearColor];
-    self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOutsideTableViews:)];
-    tap.delegate = self;
-    [self.view addGestureRecognizer:tap];
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
-{
-    return NO;
-}
-
-- (void)tapOutsideTableViews:(UITapGestureRecognizer *)sender
-{
-    
-    [self.delegate didDismissExpandingTables];
+    if (self.needsUpdateConstraints)
+    {
+        [self updateViewConstraints];
+    }
+    return self.view.frame.size;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

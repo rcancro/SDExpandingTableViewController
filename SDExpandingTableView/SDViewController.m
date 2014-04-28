@@ -68,17 +68,11 @@ static NSString const *kDataKey = @"data";
 
 - (IBAction)tapMeAction:(id)sender
 {
-    self.expandingVC = [[SDExpandingTableViewController alloc] initWithColumn:@"root" tableViewStyle:UITableViewStylePlain displayAtPoint:CGPointMake(20, 60)];
+    self.expandingVC = [[SDExpandingTableViewController alloc] initWithColumn:@"root" tableViewStyle:UITableViewStylePlain];
     self.expandingVC.dataSource = self;
     self.expandingVC.delegate = self;
     
-    [self.navigationController addChildViewController:self.expandingVC];
-    self.expandingVC.view.frame = self.navigationController.view.bounds;
-    [self.navigationController.view addSubview:self.expandingVC.view];
-    
-//    self.popover = [[UIPopoverController alloc] initWithContentViewController:self.expandingVC];
-//    [self.popover presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    
+    [self.expandingVC presentFromBarButtonItem:self.navigationItem.leftBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
 - (NSArray *)dataForID:(id<SDExpandingTableViewColumnDelegate>)column
