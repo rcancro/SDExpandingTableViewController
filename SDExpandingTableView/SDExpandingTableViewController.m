@@ -11,7 +11,7 @@
 static const CGSize kDefaultTableViewSize = {205.f, 350.f};
 static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
 
-@interface SDExpandingTableViewController ()<UITableViewDataSource, UITableViewDelegate>
+@interface SDExpandingTableViewController ()<UITableViewDataSource, UITableViewDelegate, UIPopoverControllerDelegate>
 @property (nonatomic, strong) NSMutableDictionary *identifierToTableView;
 @property (nonatomic, strong) NSMutableDictionary *tableViewToIdentifier;
 @property (nonatomic, strong) NSMutableArray *tableViews;
@@ -49,6 +49,7 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
 - (void)presentFromRect:(CGRect)rect inView:(UIView *)view permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections animated:(BOOL)animated
 {
     self.popController = [[UIPopoverController alloc] initWithContentViewController:self];
+    self.popController.delegate = self;
     [self.popController presentPopoverFromRect:rect inView:view permittedArrowDirections:arrowDirections animated:animated];
     [self.delegate didSelectRowAtIndexPath:nil inColumn:[self.dataSource rootColumnIdentifier] forTableView:nil];
 }
@@ -56,8 +57,25 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
 - (void)presentFromBarButtonItem:(UIBarButtonItem *)item permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections animated:(BOOL)animated
 {
     self.popController = [[UIPopoverController alloc] initWithContentViewController:self];
+    self.popController.delegate = self;
     [self.popController presentPopoverFromBarButtonItem:item permittedArrowDirections:arrowDirections animated:animated];
     [self.delegate didSelectRowAtIndexPath:nil inColumn:[self.dataSource rootColumnIdentifier] forTableView:nil];
+}
+
+- (void)dismissAnimated:(BOOL)animated
+{
+    [self.popController dismissPopoverAnimated:animated];
+}
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    self.popController = nil;
+}
+
+
+- (void)dealloc
+{
+    
 }
 
 - (void)viewDidLoad
@@ -189,7 +207,7 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     id<SDExpandingTableViewColumnDelegate> column = self.tableViewToIdentifier[@(tableView.tag)];
     if (nil != column)
     {
-        rowCount = [self.dataSource numberOfRowsInColumn:column section:section];
+        rowCount = [self.dataSource numberOfRowsInColumn:column section:section forTableView:tableView];
     }
     return rowCount;
 }

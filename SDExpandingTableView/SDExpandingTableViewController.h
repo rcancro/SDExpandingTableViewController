@@ -15,16 +15,14 @@
 
 @protocol SDExpandingTableViewControllerDataSource<NSObject>
 
-// data source methods
 - (UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column forTableView:(UITableView *)tableView;
-- (NSInteger)numberOfRowsInColumn:(id<SDExpandingTableViewColumnDelegate>)column section:(NSInteger)section;
-- (NSInteger)numberOfSectionsInColumn:(id<SDExpandingTableViewColumnDelegate>)column;
+- (NSInteger)numberOfRowsInColumn:(id<SDExpandingTableViewColumnDelegate>)column section:(NSInteger)section forTableView:(UITableView *)tableView;;
+- (NSInteger)numberOfSectionsInColumn:(id<SDExpandingTableViewColumnDelegate>)column forTableView:(UITableView *)tableView;;
 
 - (id<SDExpandingTableViewColumnDelegate>)rootColumnIdentifier;
 @end
 
 @protocol SDExpandingTableViewControllerDelegate<NSObject>
-// delegate methods
 - (void)didSelectRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column forTableView:(UITableView *)tableView;;
 - (void)didDismissExpandingTables;
 
@@ -49,5 +47,6 @@
 
 - (void)presentFromRect:(CGRect)rect inView:(UIView *)view permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections animated:(BOOL)animated;
 - (void)presentFromBarButtonItem:(UIBarButtonItem *)item permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections animated:(BOOL)animated;
+- (void)dismissAnimated:(BOOL)animated;;
 
 @end
