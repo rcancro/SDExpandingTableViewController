@@ -68,7 +68,7 @@ static NSString const *kDataKey = @"data";
 
 - (IBAction)tapMeAction:(id)sender
 {
-    self.expandingVC = [[SDExpandingTableViewController alloc] initWithColumn:@"root" tableViewStyle:UITableViewStylePlain];
+    self.expandingVC = [[SDExpandingTableViewController alloc] initWithTableViewStyle:UITableViewStylePlain];
     self.expandingVC.dataSource = self;
     self.expandingVC.delegate = self;
     
@@ -90,6 +90,10 @@ static NSString const *kDataKey = @"data";
     return data;
 }
 
+- (NSString *)rootColumnIdentifier
+{
+    return @"root";
+}
 
 - (UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column
 {
