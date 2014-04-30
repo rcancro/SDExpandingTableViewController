@@ -40,8 +40,6 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
         _needsUpdateConstraints = YES;
         _selectedColumnColor = [UIColor whiteColor];
         _nonselectedColumnColor = [UIColor colorWithRed:.95f green:.95f blue:.95f alpha:1.f];
-        
-//        [self appendTableView:column];
     }
     return self;
 }
@@ -51,7 +49,7 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     self.popController = [[UIPopoverController alloc] initWithContentViewController:self];
     self.popController.delegate = self;
     [self.popController presentPopoverFromRect:rect inView:view permittedArrowDirections:arrowDirections animated:animated];
-    [self.delegate didSelectRowAtIndexPath:nil inColumn:[self.dataSource rootColumnIdentifier] forTableView:nil];
+    [self navigateToColumn:[self.dataSource rootColumnIdentifier] fromParentColumn:nil animated:YES];
 }
 
 - (void)presentFromBarButtonItem:(UIBarButtonItem *)item permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections animated:(BOOL)animated
@@ -59,23 +57,20 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     self.popController = [[UIPopoverController alloc] initWithContentViewController:self];
     self.popController.delegate = self;
     [self.popController presentPopoverFromBarButtonItem:item permittedArrowDirections:arrowDirections animated:animated];
-    [self.delegate didSelectRowAtIndexPath:nil inColumn:[self.dataSource rootColumnIdentifier] forTableView:nil];
+    [self navigateToColumn:[self.dataSource rootColumnIdentifier] fromParentColumn:nil animated:YES];
 }
 
 - (void)dismissAnimated:(BOOL)animated
 {
     [self.popController dismissPopoverAnimated:animated];
+    self.popController = nil;
+    [self.delegate didDismissExpandingTables];
 }
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
     self.popController = nil;
-}
-
-
-- (void)dealloc
-{
-    
+    [self.delegate didDismissExpandingTables];
 }
 
 - (void)viewDidLoad
@@ -207,7 +202,7 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     id<SDExpandingTableViewColumnDelegate> column = self.tableViewToIdentifier[@(tableView.tag)];
     if (nil != column)
     {
-        rowCount = [self.dataSource numberOfRowsInColumn:column section:section forTableView:tableView];
+        rowCount = [self.dataSource numberOfRowsInColumn:column section:section];
     }
     return rowCount;
 }
@@ -218,7 +213,7 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     id<SDExpandingTableViewColumnDelegate> column = self.tableViewToIdentifier[@(tableView.tag)];
     if (nil != column)
     {
-        tableCell = [self.dataSource cellForRowAtIndexPath:indexPath inColumn:column forTableView:tableView];
+        tableCell = [self.dataSource cellForRowAtIndexPath:indexPath inColumn:column];
     }
     return tableCell;
 }
