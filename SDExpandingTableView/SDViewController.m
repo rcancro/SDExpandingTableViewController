@@ -137,11 +137,11 @@ static NSString const *kDataKey = @"data";
             [self.expandingVC dismissAnimated:YES];
             if ([[columnId identifier] isEqualToString:@"Ringo"])
             {
-                self.label.text = [NSString stringWithFormat:@"you choose %@.  you have questionable taste.", columnId];
+                self.label.text = [NSString stringWithFormat:@"you chose %@.  you have questionable taste.", columnId];
             }
             else
             {
-                self.label.text = [NSString stringWithFormat:@"you choose %@.  you have fine taste.", columnId];
+                self.label.text = [NSString stringWithFormat:@"you chose %@.  you have fine taste.", columnId];
             }
         }
         else

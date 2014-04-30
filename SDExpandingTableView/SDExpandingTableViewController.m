@@ -6,6 +6,7 @@
 //
 
 #import "SDExpandingTableViewController.h"
+#import "SDMacros.h"
 
 static const CGSize kDefaultTableViewSize = {205.f, 350.f};
 static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
@@ -63,10 +64,10 @@ static const CGFloat kMaxHeightPadding = 20.f;
     [super viewDidLoad];
     [self.view addSubview:self.scrollView];
     
-    SDExpandingTableViewController *weakSelf = self;
+    @weakify(self);
     self.orientationChangeListener = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidChangeStatusBarFrameNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        SDExpandingTableViewController *strongSelf = weakSelf;
-        [strongSelf setContainerFrames:YES];
+        @strongify(self);
+        [self setContainerFrames:YES];
     }];
     
     [self setContainerFrames:NO];
