@@ -3,7 +3,6 @@
 //  SDExpandingTableView
 //
 //  Created by ricky cancro on 4/23/14.
-//  Copyright (c) 2014 My name is kuma. All rights reserved.
 //
 
 #import "SDExpandingTableViewController.h"
@@ -213,7 +212,7 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     id<SDExpandingTableViewColumnDelegate> column = self.tableViewToIdentifier[@(tableView.tag)];
     if (nil != column)
     {
-        tableCell = [self.dataSource cellForRowAtIndexPath:indexPath inColumn:column];
+        tableCell = [self.dataSource cellForRowAtIndexPath:indexPath inColumn:column forTableView:tableView];
     }
     return tableCell;
 }

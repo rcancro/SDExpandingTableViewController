@@ -3,7 +3,6 @@
 //  SDExpandingTableView
 //
 //  Created by ricky cancro on 4/23/14.
-//  Copyright (c) 2014 My name is kuma. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -29,10 +28,11 @@
  *
  *  @param indexPath The indexpath of the requested cell
  *  @param column    the column of the requested cell
+ *  @param tableView The tableView where the cell will live (allows user to call dequeueCell on the tableView)
  *
  *  @return A cell for the given location
  */
-- (UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column;
+- (UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column forTableView:(UITableView *)tableView;;
 
 /**
  *  Returns the # of rows in a section of a column
@@ -66,7 +66,7 @@
  *  @param column    The column of the cell
  *  @param tableView The tableView comes along for the ride in case the user needs to get the selected cell.
  */
-- (void)didSelectRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column forTableView:(UITableView *)tableView;;
+- (void)didSelectRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column forTableView:(UITableView *)tableView;
 
 /**
  *  Called when the popover is dismissed

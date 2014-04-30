@@ -3,7 +3,6 @@
 //  SDExpandingTableView
 //
 //  Created by ricky cancro on 4/23/14.
-//  Copyright (c) 2014 My name is kuma. All rights reserved.
 //
 
 #import "SDViewController.h"
@@ -74,7 +73,6 @@ static NSString const *kDataKey = @"data";
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (IBAction)tapMeAction:(id)sender
@@ -86,29 +84,20 @@ static NSString const *kDataKey = @"data";
     [self.expandingVC presentFromBarButtonItem:self.navigationItem.leftBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
-- (NSArray *)dataForID:(id<SDExpandingTableViewColumnDelegate>)column
-{
-    NSArray *data = [self.level1 objectForKey:column.identifier];
-    if (!data)
-    {
-        data = [self.level2 objectForKey:column.identifier];
-    }
-    
-    if (!data)
-    {
-        data = [self.level0 objectForKey:column.identifier];
-    }
-    return data;
-}
-
+#pragma mark - SDExpandingTableViewControllerDataSource
 - (id<SDExpandingTableViewColumnDelegate>)rootColumnIdentifier
 {
     return @"root";
 }
 
-- (UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column
+- (void)setupTableView:(UITableView *)tableView forColumn:(id<SDExpandingTableViewColumnDelegate>)column
 {
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+    [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
+}
+
+- (UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column forTableView:(UITableView *)tableView
+{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     
     NSArray *data = self.menuData[column.identifier];
     NSString *item = [data objectAtIndex:indexPath.row];
@@ -126,6 +115,8 @@ static NSString const *kDataKey = @"data";
     NSArray *data = self.menuData[column.identifier];
     return [data count];
 }
+
+#pragma mark - SDExpandingTableViewControllerDelegate
 
 - (void)didSelectRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column forTableView:(UITableView *)tableView
 {
