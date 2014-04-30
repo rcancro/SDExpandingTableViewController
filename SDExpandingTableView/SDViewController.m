@@ -66,7 +66,13 @@ static NSString const *kDataKey = @"data";
     // idle race album
     self.menuData[@"Birthday"] = @[@"Skeleton And The Roundabout",@"Happy Birthday (Instrumental)",@"Birthday.",@"I Like My Toys",@"Morning Sunshine",@"Follow Me Follow",@"Sitting In My Tree",@"On With The Show",@"Lucky Man",@"Mrs. Ward",@"Pie In The Sky",@"Lady Who Said She Could Fly",@"End Of The Road"];
 
+    self.menuData[@"A Hard Day's Night."] = @[@"John"];
+    self.menuData[@"John"] = @[@"Paul"];
+    self.menuData[@"Paul"] = @[@"George"];
+    self.menuData[@"George"] = @[@"Ringo"];
     
+    
+    self.label.preferredMaxLayoutWidth = self.view.frame.size.width - 20;
     
 }
 
@@ -129,7 +135,14 @@ static NSString const *kDataKey = @"data";
         if (nil == self.menuData[columnId])
         {
             [self.expandingVC dismissAnimated:YES];
-            self.label.text = [NSString stringWithFormat:@"you choose %@.  you have fine taste.", columnId];
+            if ([[columnId identifier] isEqualToString:@"Ringo"])
+            {
+                self.label.text = [NSString stringWithFormat:@"you choose %@.  you have questionable taste.", columnId];
+            }
+            else
+            {
+                self.label.text = [NSString stringWithFormat:@"you choose %@.  you have fine taste.", columnId];
+            }
         }
         else
         {

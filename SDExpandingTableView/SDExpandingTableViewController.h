@@ -118,6 +118,16 @@
 @property (nonatomic, assign) UIEdgeInsets tableViewsPaddingInsets;
 
 /**
+ *  The max size that the view can grow in both portrait
+ */
+@property (nonatomic, assign) CGSize maxSizePortrait;
+
+/**
+ *  The max size that the view can grow in both landscape
+ */
+@property (nonatomic, assign) CGSize maxSizeLandscape;
+
+/**
  *  The background color for the selected column
  */
 @property (nonatomic, strong) UIColor *selectedColumnColor;

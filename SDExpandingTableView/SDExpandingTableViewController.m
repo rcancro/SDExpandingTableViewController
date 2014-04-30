@@ -9,6 +9,8 @@
 
 static const CGSize kDefaultTableViewSize = {205.f, 350.f};
 static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
+static const CGFloat kMaxWidthPadding = 20.f;
+static const CGFloat kMaxHeightPadding = 20.f;
 
 @interface SDExpandingTableViewController ()<UITableViewDataSource, UITableViewDelegate, UIPopoverControllerDelegate>
 @property (nonatomic, strong) NSMutableDictionary *identifierToTableView;
@@ -21,6 +23,8 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
 @property (nonatomic, assign) BOOL needsUpdateConstraints;
 
 @property (nonatomic, strong) UIPopoverController *popController;
+@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) id orientationChangeListener;
 @end
 
 @implementation SDExpandingTableViewController
@@ -39,9 +43,41 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
         _needsUpdateConstraints = YES;
         _selectedColumnColor = [UIColor whiteColor];
         _nonselectedColumnColor = [UIColor colorWithRed:.95f green:.95f blue:.95f alpha:1.f];
+        
+        _scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
+        _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+        
+        CGRect screenBounds = [UIScreen mainScreen].bounds;
+        _maxSizePortrait = screenBounds.size;
+        _maxSizePortrait.width -= kMaxWidthPadding * 2;
+        _maxSizePortrait.height -= kMaxHeightPadding * 2;
+        
+        _maxSizeLandscape = CGSizeMake(_maxSizePortrait.height, _maxSizePortrait.width);
+    
     }
     return self;
 }
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    [self.view addSubview:self.scrollView];
+    
+    SDExpandingTableViewController *weakSelf = self;
+    self.orientationChangeListener = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidChangeStatusBarFrameNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        SDExpandingTableViewController *strongSelf = weakSelf;
+        [strongSelf setContainerFrames:YES];
+    }];
+    
+    [self setContainerFrames:NO];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChangeListener];
+}
+
+#pragma mark - presentation methods
 
 - (void)presentFromRect:(CGRect)rect inView:(UIView *)view permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections animated:(BOOL)animated
 {
@@ -66,27 +102,28 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     [self.delegate didDismissExpandingTables];
 }
 
+#pragma mark - UIPopoverControllerDelegate
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
     self.popController = nil;
     [self.delegate didDismissExpandingTables];
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    [self setContainerFrames:NO];
-}
+#pragma mark - Table Navigation Methods
 
-- (void)setContainerFrames:(BOOL)animated
+- (void)navigateToColumn:(id<SDExpandingTableViewColumnDelegate>)column fromParentColumn:(id<SDExpandingTableViewColumnDelegate>)parentColumn animated:(BOOL)animated
 {
-    CGRect containerFrame = self.view.frame;
-    NSUInteger tableViewCount = [self.tableViews count] == 0 ? 1 : [self.tableViews count];
-    
-    containerFrame.size.width = self.tableViewsPaddingInsets.left + self.tableViewsPaddingInsets.right + (self.tableViewSize.width * tableViewCount);
-    containerFrame.size.height = self.tableViewsPaddingInsets.top + self.tableViewsPaddingInsets.bottom + self.tableViewSize.height;
-    self.view.frame = containerFrame;
-    [self.popController setPopoverContentSize:self.view.frame.size animated:animated];
+    UITableView *tableView = [self.tableViews lastObject];
+    id<SDExpandingTableViewColumnDelegate> lastColumn = self.tableViewToIdentifier[@(tableView.tag)];
+    if ([parentColumn identifier] == [lastColumn identifier])
+    {
+        [self appendTableView:column];
+    }
+    else
+    {
+        [self popBackToColumn:parentColumn];
+        [self appendTableView:column];
+    }
 }
 
 - (void)appendTableView:(id<SDExpandingTableViewColumnDelegate>)column
@@ -114,7 +151,7 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     self.identifierToTableView[column.identifier] = tableView;
     self.tableViewToIdentifier[@(tableView.tag)] = column;
     
-    [self.view addSubview:tableView];
+    [self.scrollView addSubview:tableView];
     [tableView reloadData];
     
     self.needsUpdateConstraints = YES;
@@ -146,6 +183,8 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     
 }
 
+#pragma mark constraints and layout
+
 - (void)updateViewConstraints
 {
     if (self.needsUpdateConstraints)
@@ -176,6 +215,9 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
             }
             [horizontalConstraints appendFormat:@"-(%f)-|", self.tableViewsPaddingInsets.right];
             [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:horizontalConstraints options:0 metrics:nil views:views]];
+            
+            [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_scrollView]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_scrollView)]];
+            [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_scrollView]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_scrollView)]];
         }
         
     }
@@ -188,6 +230,47 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     return self.view.frame.size;
 }
 
+- (void)setContainerFrames:(BOOL)animated
+{
+    CGRect containerFrame = self.view.frame;
+    NSUInteger tableViewCount = [self.tableViews count] == 0 ? 1 : [self.tableViews count];
+    
+    containerFrame.size.width = self.tableViewsPaddingInsets.left + self.tableViewsPaddingInsets.right + (self.tableViewSize.width * tableViewCount);
+    containerFrame.size.height = self.tableViewsPaddingInsets.top + self.tableViewsPaddingInsets.bottom + self.tableViewSize.height;
+    
+    CGRect viewFrame = containerFrame;
+    CGSize currentMaxSize = [self currentMaxSize];
+    if (viewFrame.size.height > currentMaxSize.height)
+    {
+        viewFrame.size.height = currentMaxSize.height;
+    }
+    
+    if (viewFrame.size.width > currentMaxSize.width)
+    {
+        viewFrame.size.width = currentMaxSize.width;
+    }
+    
+    self.view.frame = viewFrame;
+    self.scrollView.contentSize = containerFrame.size;
+    
+    
+    CGPoint offset = CGPointMake(containerFrame.size.width - self.view.frame.size.width, containerFrame.size.height - self.view.frame.size.height);
+    [self.scrollView setContentOffset:offset animated:animated];
+    
+    [self.popController setPopoverContentSize:self.view.frame.size animated:animated];
+}
+
+- (CGSize)currentMaxSize
+{
+    CGSize currentMaxSize = self.maxSizeLandscape;
+    if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation))
+    {
+        currentMaxSize = self.maxSizePortrait;
+    }
+    return currentMaxSize;
+}
+
+#pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     id<SDExpandingTableViewColumnDelegate> column = self.tableViewToIdentifier[@(tableView.tag)];
@@ -195,6 +278,7 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
 }
 
 
+#pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 {
     NSInteger rowCount = 0;
@@ -216,21 +300,5 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
     }
     return tableCell;
 }
-
-- (void)navigateToColumn:(id<SDExpandingTableViewColumnDelegate>)column fromParentColumn:(id<SDExpandingTableViewColumnDelegate>)parentColumn animated:(BOOL)animated
-{
-    UITableView *tableView = [self.tableViews lastObject];
-    id<SDExpandingTableViewColumnDelegate> lastColumn = self.tableViewToIdentifier[@(tableView.tag)];
-    if ([parentColumn identifier] == [lastColumn identifier])
-    {
-        [self appendTableView:column];
-    }
-    else
-    {
-        [self popBackToColumn:parentColumn];
-        [self appendTableView:column];
-    }
-}
-
 
 @end
