@@ -12,11 +12,11 @@
 static NSString const *kIdKey = @"identifier";
 static NSString const *kDataKey = @"data";
 
-@interface NSString(hello)<SDExpandingTableViewColumnDelegate>
+@interface NSString(SDExpandingTableViewColumnDelegate)<SDExpandingTableViewColumnDelegate>
 - (NSString *)identifier;
 @end
 
-@implementation NSString(hello)
+@implementation NSString(SDExpandingTableViewColumnDelegate)
 
 - (NSString *)identifier
 {
@@ -25,7 +25,7 @@ static NSString const *kDataKey = @"data";
 
 @end
 
-@interface SDViewController ()<SDExpandingTableViewControllerDelegate, SDExpandingTableViewControllerDataSource>
+@interface SDViewController ()<SDExpandingTableViewControllerDataSource, SDExpandingTableViewControllerDelegate>
 @property (nonatomic, strong) NSArray *data;
 @property (nonatomic, strong) NSDictionary *level0;
 
@@ -95,7 +95,7 @@ static NSString const *kDataKey = @"data";
     return @"root";
 }
 
-- (UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column
+- (UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column forTableView:(UITableView *)tableView
 {
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     
@@ -105,24 +105,24 @@ static NSString const *kDataKey = @"data";
     return cell;
 }
 
-- (NSInteger)numberOfRowsInColumn:(id<SDExpandingTableViewColumnDelegate>)table section:(NSInteger)section
+- (NSInteger)numberOfRowsInColumn:(id<SDExpandingTableViewColumnDelegate>)column section:(NSInteger)section
 {
-    NSArray *data = [self dataForID:table];
+    NSArray *data = [self dataForID:column];
     return [data count];
 }
 
-- (NSArray *)childrenIdentifiersForIdentifier:(id<SDExpandingTableViewColumnDelegate>)identifier
-{
-    NSArray *data = [self dataForID:identifier];
-    return data;
-}
-
-- (NSInteger)numberOfSectionsInColumn:(id<SDExpandingTableViewColumnDelegate>)table
+- (NSInteger)numberOfSectionsInColumn:(id<SDExpandingTableViewColumnDelegate>)table forTableView:(UITableView *)tableView
 {
     return 1;
 }
 
-- (void)didSelectRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column
+- (NSInteger)numberOfRowsInColumn:(id<SDExpandingTableViewColumnDelegate>)column section:(NSInteger)section forTableView:(UITableView *)tableView
+{
+    NSArray *data = [self dataForID:column];
+    return [data count];
+}
+
+- (void)didSelectRowAtIndexPath:(NSIndexPath *)indexPath inColumn:(id<SDExpandingTableViewColumnDelegate>)column forTableView:(UITableView *)tableView
 {
     NSArray *data = [self dataForID:column];
     if ([data count] > indexPath.row)

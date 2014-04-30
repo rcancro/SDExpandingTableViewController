@@ -39,7 +39,7 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
         _tableViewsPaddingInsets = kDefaultTableViewPaddingInsets;
         _needsUpdateConstraints = YES;
         _selectedColumnColor = [UIColor whiteColor];
-        _nonselectedColumnColor = [UIColor lightGrayColor];
+        _nonselectedColumnColor = [UIColor colorWithRed:.95f green:.95f blue:.95f alpha:1.f];
         
 //        [self appendTableView:column];
     }
@@ -97,7 +97,7 @@ static const UIEdgeInsets kDefaultTableViewPaddingInsets = {5.f, 5.f, 5.f, 5.f};
 
 - (void)appendTableView:(id<SDExpandingTableViewColumnDelegate>)column
 {
-    @strongify(_delegate, strongDelegate);
+    id<SDExpandingTableViewControllerDelegate> strongDelegate = self.delegate;
     UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectZero style:self.tableStyle];
     tableView.dataSource = self;
     tableView.delegate = self;
