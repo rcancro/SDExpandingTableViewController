@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9CA50BA4191204C200704617 /* SDExpandingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CA50BA3191204C200704617 /* SDExpandingTableViewController.m */; };
 		9CD4E66A1908573B00CDD6A3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD4E6691908573B00CDD6A3 /* Foundation.framework */; };
 		9CD4E66C1908573B00CDD6A3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD4E66B1908573B00CDD6A3 /* CoreGraphics.framework */; };
 		9CD4E66E1908573B00CDD6A3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD4E66D1908573B00CDD6A3 /* UIKit.framework */; };
@@ -21,7 +22,6 @@
 		9CD4E68B1908573B00CDD6A3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD4E66D1908573B00CDD6A3 /* UIKit.framework */; };
 		9CD4E6931908573B00CDD6A3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9CD4E6911908573B00CDD6A3 /* InfoPlist.strings */; };
 		9CD4E6951908573B00CDD6A3 /* SDExpandingTableViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CD4E6941908573B00CDD6A3 /* SDExpandingTableViewTests.m */; };
-		9CD4E6A01908593100CDD6A3 /* SDExpandingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CD4E69F1908593100CDD6A3 /* SDExpandingTableViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +35,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9CA50BA2191204C200704617 /* SDExpandingTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDExpandingTableViewController.h; sourceTree = "<group>"; };
+		9CA50BA3191204C200704617 /* SDExpandingTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDExpandingTableViewController.m; sourceTree = "<group>"; };
+		9CA50BA5191204D500704617 /* SDMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDMacros.h; sourceTree = "<group>"; };
 		9CD4E6661908573B00CDD6A3 /* SDExpandingTableView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SDExpandingTableView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CD4E6691908573B00CDD6A3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		9CD4E66B1908573B00CDD6A3 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -54,8 +57,6 @@
 		9CD4E6901908573B00CDD6A3 /* SDExpandingTableViewTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SDExpandingTableViewTests-Info.plist"; sourceTree = "<group>"; };
 		9CD4E6921908573B00CDD6A3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		9CD4E6941908573B00CDD6A3 /* SDExpandingTableViewTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SDExpandingTableViewTests.m; sourceTree = "<group>"; };
-		9CD4E69E1908593100CDD6A3 /* SDExpandingTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDExpandingTableViewController.h; sourceTree = "<group>"; };
-		9CD4E69F1908593100CDD6A3 /* SDExpandingTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDExpandingTableViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +116,9 @@
 		9CD4E66F1908573B00CDD6A3 /* SDExpandingTableView */ = {
 			isa = PBXGroup;
 			children = (
+				9CA50BA5191204D500704617 /* SDMacros.h */,
+				9CA50BA2191204C200704617 /* SDExpandingTableViewController.h */,
+				9CA50BA3191204C200704617 /* SDExpandingTableViewController.m */,
 				9CD4E6781908573B00CDD6A3 /* SDAppDelegate.h */,
 				9CD4E6791908573B00CDD6A3 /* SDAppDelegate.m */,
 				9CD4E67B1908573B00CDD6A3 /* Main.storyboard */,
@@ -122,8 +126,6 @@
 				9CD4E67F1908573B00CDD6A3 /* SDViewController.m */,
 				9CD4E6811908573B00CDD6A3 /* Images.xcassets */,
 				9CD4E6701908573B00CDD6A3 /* Supporting Files */,
-				9CD4E69E1908593100CDD6A3 /* SDExpandingTableViewController.h */,
-				9CD4E69F1908593100CDD6A3 /* SDExpandingTableViewController.m */,
 			);
 			path = SDExpandingTableView;
 			sourceTree = "<group>";
@@ -257,7 +259,7 @@
 			files = (
 				9CD4E6761908573B00CDD6A3 /* main.m in Sources */,
 				9CD4E6801908573B00CDD6A3 /* SDViewController.m in Sources */,
-				9CD4E6A01908593100CDD6A3 /* SDExpandingTableViewController.m in Sources */,
+				9CA50BA4191204C200704617 /* SDExpandingTableViewController.m in Sources */,
 				9CD4E67A1908573B00CDD6A3 /* SDAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
