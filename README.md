@@ -20,5 +20,13 @@ SDExpandingTableViewController creates a UITableView for each "column" in its vi
 @end
 ````
 
+You can see most of these are similar to a UITableView's data source, except that a SDExpandingTableViewColumnDelegate is also passed along. Since the client doesn't have anything to do with the UITableView's, a column is passed so that the proper data can be returned.  The SDExpandingTableViewColumnDelegate is super simple:
 
-You can see most of these are similar to a UITableView's data source, except that a SDExpandingTableViewColumnDelegate is also passed along.
+````
+@protocol SDExpandingTableViewColumnDelegate <NSObject>
+@required
+- (NSString *)identifier;
+@end
+````
+And can easily be implemented in a model object class or, like in the example, added to a class like NSString via a category.
+
