@@ -7,7 +7,7 @@ SDExpandingTableViewController manages multiple UITableViews to provide an inter
 
 But it doesn't have to be (it was just tested a lot more in a popover....)
 
-h2. How it works
+#h2 How it works
 SDExpandingTableViewController creates a UITableView for each "column" in its view and becomes the UITableViewDelegate and UITableViewDataSource for each of these UITableViews.  When these data source and delegate methods are called, SDExpandingTableViewController asks its own data source and delegate for the proper result.
 
 ````
